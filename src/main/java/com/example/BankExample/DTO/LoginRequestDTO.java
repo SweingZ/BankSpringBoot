@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LoginRequestDTO {
-    private String username;
+    private String email;
     private String password;
     private RoleEnum role;
 }

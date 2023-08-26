@@ -11,15 +11,16 @@ import lombok.NoArgsConstructor;
 @MappedSuperclass
 @Data
 public class Person {
-    private String username;
+    protected String firstName;
 
-    private String fullName;
+    protected String lastName;
 
-    private String password;
+    protected String email;
 
-    private String address;
+    protected String password;
 
-    private long phoneNumber;
+    protected String address;
 
-    private String email;
+    protected long phoneNumber;
+
 }

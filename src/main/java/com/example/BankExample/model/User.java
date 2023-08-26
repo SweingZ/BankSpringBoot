@@ -2,11 +2,14 @@ package com.example.BankExample.model;
 
 import com.example.BankExample.enums.RoleEnum;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,9 @@ public class User extends Person{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int user_id;
+
+    @JsonFormat(pattern = "yyyy-mm-dd")
+    private LocalDate dateOfBirth;
 
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")

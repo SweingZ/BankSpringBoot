@@ -48,40 +48,75 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private JwtUtil jwtUtil;
 
     @Override
+    public UserDTO registerAsUser(UserDTO userDTO) {
+        User user = this.modelMapper.map(userDTO, User.class);
+        if (this.emailExists(user.getEmail())) {
+            log.error("Username {} already taken", user.getEmail());
+            throw new RuntimeException("Username already taken");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        this.userRepo.save(user);
+        user.setPassword(null);
+        return this.modelMapper.map(user, UserDTO.class);
+    }
+
+    private Boolean emailExists(String email) {
+        Optional<Admin> savedAdmin = this.adminRepo.findByEmail(email);
+        Optional<User> savedUser = this.userRepo.findByEmail(email);
+        Optional<Agent> savedAgent = this.agentRepo.findByEmail(email);
+        return savedAdmin.isPresent() || savedUser.isPresent() || savedAgent.isPresent();
+    }
+
+    @Override
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
         LoginResponseDTO loginResponseDTO;
         if (loginRequestDTO.getRole().equals(RoleEnum.ROLE_ADMIN)) {
-            loginResponseDTO = this.loginAsAdmin(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
+            loginResponseDTO = this.loginAsAdmin(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
         }
         else if(loginRequestDTO.getRole().equals(RoleEnum.ROLE_AGENT)){
-            loginResponseDTO = this.loginAsAgent(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
+            loginResponseDTO = this.loginAsAgent(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
         }
         else {
-            loginResponseDTO = this.loginAsUser(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
+            loginResponseDTO = this.loginAsUser(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
         }
         return loginResponseDTO;
     }
 
-    private LoginResponseDTO loginAsAdmin(String username, String password) {
-        AdminDTO adminDTO = this.getAdminByUsername(username);
+    private LoginResponseDTO loginAsAdmin(String email, String password) {
+        AdminDTO adminDTO = this.getAdminByEmail(email);
         return this.authenticate(adminDTO, password, adminDTO.getRole());
     }
 
-    private LoginResponseDTO loginAsAgent(String username, String password) {
-        AgentDTO agentDTO = this.getAgentByUsername(username);
+    private LoginResponseDTO loginAsAgent(String email, String password) {
+        AgentDTO agentDTO = this.getAgentByEmail(email);
         return this.authenticate(agentDTO, password, agentDTO.getRole());
     }
 
-    private LoginResponseDTO loginAsUser(String username, String password) {
-        UserDTO userDTO = this.getUserByUsername(username);
+    private LoginResponseDTO loginAsUser(String email, String password) {
+        UserDTO userDTO = this.getUserByEmail(email);
         return this.authenticate(userDTO, password, userDTO.getRole());
+    }
+
+    private AdminDTO getAdminByEmail(String email) {
+        Admin admin = this.adminRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
+        return modelMapper.map(admin, AdminDTO.class);
+    }
+
+    private AgentDTO getAgentByEmail(String email) {
+        Agent agent = this.agentRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Agent not found"));
+        return modelMapper.map(agent, AgentDTO.class);
+    }
+
+    private UserDTO getUserByEmail(String email) {
+        User user = this.userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return modelMapper.map(user, UserDTO.class);
     }
 
     private LoginResponseDTO authenticate(PersonDTO personDTO, String rawPassword, RoleEnum role) throws UsernameNotFoundException {
         this.checkPassword(rawPassword, personDTO.getPassword());
         List<SimpleGrantedAuthority> authorities = this.addAuthority(role);
         String accessToken = this.jwtUtil.generateToken(
-                personDTO.getUsername(),
+                personDTO.getEmail(),
                 new ArrayList<>(List.of(role.toString()))
 
         );
@@ -111,42 +146,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String username, RoleEnum role) {
         return null;
     }
-
-    private AdminDTO getAdminByUsername(String username) {
-        Admin admin = this.adminRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return modelMapper.map(admin, AdminDTO.class);
-    }
-
-    private AgentDTO getAgentByUsername(String username) {
-        Agent agent = this.agentRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return modelMapper.map(agent, AgentDTO.class);
-    }
-
-    private UserDTO getUserByUsername(String username) {
-        Optional<User> user = this.userRepo.findByUsername(username);
-        User user1=user.get();
-        return modelMapper.map(user1, UserDTO.class);
-    }
-
-    @Override
-    public UserDTO registerAsUser(UserDTO userDTO) {
-        User user = this.modelMapper.map(userDTO, User.class);
-        if (this.userNameExists(user.getUsername())) {
-            log.error("Username {} already taken", user.getUsername());
-            throw new RuntimeException("Username already taken");
-        }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        this.userRepo.save(user);
-        user.setPassword(null);
-        return this.modelMapper.map(user, UserDTO.class);
-    }
-
-    private Boolean userNameExists(String username) {
-        Optional<Admin> savedAdmin = this.adminRepo.findByUsername(username);
-        Optional<User> savedUser = this.userRepo.findByUsername(username);
-        Optional<Agent> savedAgent = this.agentRepo.findByUsername(username);
-        return savedAdmin.isPresent() || savedUser.isPresent() || savedAgent.isPresent();
-    }
-
-
 }
