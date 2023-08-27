@@ -7,6 +7,8 @@ import com.example.BankExample.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,5 +29,17 @@ public class AuthenticationController {
     @PostMapping("login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO){
         return ResponseEntity.ok().body(this.authenticationService.login(loginRequestDTO));
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping("jwt/admin")
+    public ResponseEntity<String> onlyAdmin() {
+        return ResponseEntity.ok().body("Only Admin");
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
+    @GetMapping("jwt/user")
+    public ResponseEntity<String> userAndAdmin() {
+        return ResponseEntity.ok().body("User And Admin");
     }
 }

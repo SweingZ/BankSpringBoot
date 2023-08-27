@@ -1,5 +1,6 @@
 package com.example.BankExample.DTO;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
