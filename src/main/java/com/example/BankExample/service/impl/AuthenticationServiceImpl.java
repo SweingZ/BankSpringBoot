@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -55,6 +56,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("Username already taken");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        LocalDate currentData = LocalDate.now();
+        user.getAccount().setDateOpened(currentData);
         this.userRepo.save(user);
         user.setPassword(null);
         return this.modelMapper.map(user, UserDTO.class);
@@ -139,11 +142,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void createAdmin() {
-
+        Admin admin = new Admin();
+        admin.setEmail("admin@gmail.com");
+        admin.setPassword(this.passwordEncoder.encode("password123"));
+        admin.setAddress("Jawalakhel");
+        admin.setFirstName("Siron");
+        admin.setLastName("Shakya");
+        admin.setPhoneNumber(9808765455l);
+        this.adminRepo.save(admin);
     }
 
     @Override
-    public UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String username, RoleEnum role) {
-        return null;
+    public UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String email, RoleEnum role) {
+        if (role.equals(RoleEnum.ROLE_USER)) {
+            UserDTO userDTO = this.getUserByEmail(email);
+            List<SimpleGrantedAuthority> authorities = this.addAuthority(userDTO.getRole());
+            return new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword(),
+                    authorities);
+        }
+        else if (role.equals(RoleEnum.ROLE_AGENT)){
+            AgentDTO agentDTO = this.getAgentByEmail(email);
+            List<SimpleGrantedAuthority> authorities = this.addAuthority(agentDTO.getRole());
+            return new UsernamePasswordAuthenticationToken(agentDTO.getEmail(), agentDTO.getPassword(),
+                    authorities);
+        }
+        else {
+            AdminDTO adminDTO = this.getAdminByEmail(email);
+            List<SimpleGrantedAuthority> authorities = this.addAuthority(adminDTO.getRole());
+            return new UsernamePasswordAuthenticationToken(adminDTO.getEmail(), adminDTO.getPassword(),
+                    authorities);
+        }
     }
 }

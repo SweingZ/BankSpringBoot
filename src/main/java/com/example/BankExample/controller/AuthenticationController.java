@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 public class AuthenticationController {
 
@@ -18,7 +20,7 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
 
     @PostMapping("register")
-    public ResponseEntity<UserDTO> registerAsUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> registerAsUser(@RequestBody @Valid UserDTO userDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.registerAsUser(userDTO));
     }
 

@@ -2,6 +2,8 @@ package com.example.BankExample.DTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Email;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,7 @@ public class PersonDTO {
 
     protected String lastName;
 
+    @Email(message = "Not valid Email")
     protected String email;
 
     protected String password;
