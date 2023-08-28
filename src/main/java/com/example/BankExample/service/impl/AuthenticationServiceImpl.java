@@ -52,8 +52,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public UserDTO registerAsUser(UserDTO userDTO) {
         User user = this.modelMapper.map(userDTO, User.class);
         if (this.emailExists(user.getEmail())) {
-            log.error("Username {} already taken", user.getEmail());
-            throw new RuntimeException("Username already taken");
+            log.error("Email {} already taken", user.getEmail());
+            throw new RuntimeException("Email already taken");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         LocalDate currentData = LocalDate.now();
@@ -118,6 +118,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new UserDTO(user.getEmail(), user.getPassword());
     }
 
+    private AgentDTO getAgentByEmailAuthentication(String email) {
+        Agent agent = this.agentRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Agent not found"));
+        return new AgentDTO(agent.getEmail(), agent.getPassword());
+    }
+
     private LoginResponseDTO authenticate(PersonDTO personDTO, String rawPassword, RoleEnum role) throws UsernameNotFoundException {
         this.checkPassword(rawPassword, personDTO.getPassword());
         List<SimpleGrantedAuthority> authorities = this.addAuthority(role);
@@ -163,7 +168,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword(),
                     authorities);
         } else if (role.equals(RoleEnum.ROLE_AGENT)) {
-            AgentDTO agentDTO = this.getAgentByEmail(email);
+            AgentDTO agentDTO = this.getAgentByEmailAuthentication(email);
             List<SimpleGrantedAuthority> authorities = this.addAuthority(agentDTO.getRole());
             return new UsernamePasswordAuthenticationToken(agentDTO.getEmail(), agentDTO.getPassword(),
                     authorities);

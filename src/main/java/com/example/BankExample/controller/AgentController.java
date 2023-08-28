@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -14,7 +15,7 @@ public class AgentController {
     private AgentService agentService;
 
     @PostMapping("agent")
-    public ResponseEntity<String> addAgent(@RequestBody AgentDTO agentDTO){
+    public ResponseEntity<String> addAgent(@RequestBody @Valid AgentDTO agentDTO){
         this.agentService.createAgent(agentDTO);
         return ResponseEntity.status(200).body("Agent Created");
     }

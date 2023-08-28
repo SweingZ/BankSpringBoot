@@ -37,6 +37,12 @@ public class AuthenticationController {
         return ResponseEntity.ok().body("Only Admin");
     }
 
+    @PreAuthorize(("hasAuthority('ROLE_AGENT')"))
+    @GetMapping("jwt/agent")
+    public ResponseEntity<String> onlyAgent(){
+        return ResponseEntity.ok().body("Only Agent");
+    }
+
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
     @GetMapping("jwt/user")
     public ResponseEntity<String> userAndAdmin() {
