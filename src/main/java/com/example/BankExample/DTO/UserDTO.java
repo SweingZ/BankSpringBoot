@@ -13,12 +13,18 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
-public class UserDTO extends PersonDTO{
+public class UserDTO extends PersonDTO {
     private int user_id;
     private LocalDate dateOfBirth;
     private AccountDTO account;
-    private List<LoanDTO> loanList ;
+    private List<LoanDTO> loanList;
     private AgentDTO agent;
     private final RoleEnum role = RoleEnum.ROLE_USER;
+
+    public UserDTO(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
 
 }

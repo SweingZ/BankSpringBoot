@@ -75,11 +75,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         LoginResponseDTO loginResponseDTO;
         if (loginRequestDTO.getRole().equals(RoleEnum.ROLE_ADMIN)) {
             loginResponseDTO = this.loginAsAdmin(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
-        }
-        else if(loginRequestDTO.getRole().equals(RoleEnum.ROLE_AGENT)){
+        } else if (loginRequestDTO.getRole().equals(RoleEnum.ROLE_AGENT)) {
             loginResponseDTO = this.loginAsAgent(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
-        }
-        else {
+        } else {
             loginResponseDTO = this.loginAsUser(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
         }
         return loginResponseDTO;
@@ -113,6 +111,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private UserDTO getUserByEmail(String email) {
         User user = this.userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return modelMapper.map(user, UserDTO.class);
+    }
+
+    private UserDTO getUserByEmailAuthentication(String email) {
+        User user = this.userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new UserDTO(user.getEmail(), user.getPassword());
     }
 
     private LoginResponseDTO authenticate(PersonDTO personDTO, String rawPassword, RoleEnum role) throws UsernameNotFoundException {
@@ -155,18 +158,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String email, RoleEnum role) {
         if (role.equals(RoleEnum.ROLE_USER)) {
-            UserDTO userDTO = this.getUserByEmail(email);
+            UserDTO userDTO = this.getUserByEmailAuthentication(email);
             List<SimpleGrantedAuthority> authorities = this.addAuthority(userDTO.getRole());
             return new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword(),
                     authorities);
-        }
-        else if (role.equals(RoleEnum.ROLE_AGENT)){
+        } else if (role.equals(RoleEnum.ROLE_AGENT)) {
             AgentDTO agentDTO = this.getAgentByEmail(email);
             List<SimpleGrantedAuthority> authorities = this.addAuthority(agentDTO.getRole());
             return new UsernamePasswordAuthenticationToken(agentDTO.getEmail(), agentDTO.getPassword(),
                     authorities);
-        }
-        else {
+        } else {
             AdminDTO adminDTO = this.getAdminByEmail(email);
             List<SimpleGrantedAuthority> authorities = this.addAuthority(adminDTO.getRole());
             return new UsernamePasswordAuthenticationToken(adminDTO.getEmail(), adminDTO.getPassword(),
