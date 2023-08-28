@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @DeleteMapping("user/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable int id){
+    public ResponseEntity<String> deleteUserById(@PathVariable("id") int id){
         userService.deleteUserById(id);
         return ResponseEntity.status(201).body("User Deleted");
     }
@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("user/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable int id){
+    public ResponseEntity<UserDTO> getUserById(@PathVariable("id") int id){
         UserDTO userDTO = userService.getUserById(id);
         return ResponseEntity.status(200).body(userDTO);
     }

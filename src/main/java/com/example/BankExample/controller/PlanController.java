@@ -21,7 +21,7 @@ public class PlanController {
     }
 
     @DeleteMapping("plan/{id}")
-    public ResponseEntity<String> deletePlanById(@PathVariable int id){
+    public ResponseEntity<String> deletePlanById(@PathVariable("id") int id){
         this.planService.deletePlanById(id);
         return ResponseEntity.status(200).body("Plan Deleted");
     }
@@ -32,7 +32,7 @@ public class PlanController {
     }
 
     @GetMapping("plan/{id}")
-    public ResponseEntity<PlanDTO> getPlanById(@PathVariable int id){
+    public ResponseEntity<PlanDTO> getPlanById(@PathVariable("id") int id){
         PlanDTO planDTO = planService.getPlanById(id);
         return ResponseEntity.status(200).body(planDTO);
     }

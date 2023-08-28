@@ -20,7 +20,7 @@ public class AgentController {
     }
 
     @DeleteMapping("agent/{id}")
-    public ResponseEntity<String> deleteAgentById(@PathVariable int id){
+    public ResponseEntity<String> deleteAgentById(@PathVariable("id") int id){
         this.agentService.deleteAgentById(id);
         return ResponseEntity.status(200).body("Agent Deleted");
     }
@@ -31,7 +31,7 @@ public class AgentController {
     }
 
     @GetMapping("agent/{id}")
-    public ResponseEntity<AgentDTO> getAccountById(@PathVariable int id){
+    public ResponseEntity<AgentDTO> getAccountById(@PathVariable("id") int id){
         AgentDTO agentDTO = agentService.getAgentById(id);
         return ResponseEntity.status(200).body(agentDTO);
     }

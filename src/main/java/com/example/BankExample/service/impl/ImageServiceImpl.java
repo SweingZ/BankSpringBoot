@@ -72,9 +72,9 @@ public class ImageServiceImpl implements ImageService {
         int index = fileName.lastIndexOf('.');
         String extension = fileName.substring(index + 1);
 
-        if (extension.equals("png")) {
+        if (extension.equalsIgnoreCase("png")) {
             return MediaType.IMAGE_PNG;
-        } else if (extension.equals("jpeg") || extension.equals("jpg")) {
+        } else if (extension.equalsIgnoreCase("jpeg") || extension.equalsIgnoreCase("jpg")) {
             return MediaType.IMAGE_JPEG;
         }
         throw new RuntimeException("Invalid Media Type");

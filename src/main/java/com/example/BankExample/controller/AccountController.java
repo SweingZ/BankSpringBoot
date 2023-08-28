@@ -20,7 +20,7 @@ public class AccountController {
     }
 
     @DeleteMapping("account/{id}")
-    public ResponseEntity<String> deleteAccountById(@PathVariable int id){
+    public ResponseEntity<String> deleteAccountById(@PathVariable("id") int id){
         accountService.deleteAccountById(id);
         return ResponseEntity.status(201).body("Account Deleted");
     }
@@ -31,7 +31,7 @@ public class AccountController {
     }
 
     @GetMapping("account/{id}")
-    public ResponseEntity<AccountDTO> getAccountById(@PathVariable int id){
+    public ResponseEntity<AccountDTO> getAccountById(@PathVariable("id") int id){
         AccountDTO accountDTO = accountService.getAccountById(id);
         return ResponseEntity.status(200).body(accountDTO);
     }
