@@ -1,6 +1,7 @@
 package com.example.BankExample.service.impl;
 
 import com.example.BankExample.DTO.TransactionDTO;
+import com.example.BankExample.model.Account;
 import com.example.BankExample.model.Transaction;
 import com.example.BankExample.repository.TransactionRepo;
 import com.example.BankExample.service.TransactionService;
@@ -36,8 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TransactionDTO getTransactionById(int id) {
-        Optional<Transaction> transaction = transactionRepo.findById(id);
-        if (transaction.isEmpty()) throw new RuntimeException("No Transaction found !!!");
+        Transaction transaction = transactionRepo.findById(id).orElseThrow(() -> new RuntimeException("Transaction Not Found"));
         TransactionDTO transactionDTO = this.modelMapper.map(transaction, TransactionDTO.class);
         return transactionDTO;
     }

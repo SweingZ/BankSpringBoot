@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -32,8 +30,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO getAccountById(int id) {
-        Optional<Account> account = accountRepo.findById(id);
-        if (account.isEmpty()) throw new RuntimeException("Account not found");
+        Account account = accountRepo.findById(id).orElseThrow(() -> new RuntimeException("Account Not Found"));
         AccountDTO accountDTO = this.modelMapper.map(account, AccountDTO.class);
         return accountDTO;
     }

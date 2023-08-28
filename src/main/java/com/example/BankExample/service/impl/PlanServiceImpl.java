@@ -1,6 +1,7 @@
 package com.example.BankExample.service.impl;
 
 import com.example.BankExample.DTO.PlanDTO;
+import com.example.BankExample.model.Account;
 import com.example.BankExample.model.Plan;
 import com.example.BankExample.repository.PlanRepo;
 import com.example.BankExample.service.PlanService;
@@ -31,8 +32,7 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public PlanDTO getPlanById(int id) {
-        Optional<Plan> plan = planRepo.findById(id);
-        if (plan.isEmpty()) throw new RuntimeException("Plan not Found !!!!");
+        Plan plan = planRepo.findById(id).orElseThrow(() -> new RuntimeException("Plan Not Found"));
         PlanDTO planDTO = this.modelMapper.map(plan, PlanDTO.class);
         return planDTO;
     }

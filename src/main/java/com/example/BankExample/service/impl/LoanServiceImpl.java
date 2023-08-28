@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LoanServiceImpl implements LoanService {
@@ -34,8 +33,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public LoanDTO getLoanById(int id) {
-        Optional<Loan> loan = loanRepo.findById(id);
-        if (loan.isEmpty()) throw new RuntimeException("Loan not Found !!!!");
+        Loan loan = loanRepo.findById(id).orElseThrow(() -> new RuntimeException("Loan Not Found"));
         LoanDTO loanDTO = this.modelMapper.map(loan, LoanDTO.class);
         return loanDTO;
     }

@@ -40,8 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserById(int id) {
-        Optional<User> user = userRepo.findById(id);
-        if (user.isEmpty()) throw new RuntimeException("User not found");
+        User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         UserDTO userDTO = this.modelMapper.map(user, UserDTO.class);
         userDTO.setPassword(null);
         return userDTO;
