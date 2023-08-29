@@ -1,14 +1,12 @@
 package com.example.BankExample.model;
 
+import com.example.BankExample.DTO.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +20,15 @@ public class Image {
 
     private String fileName;
 
+    @OneToOne(mappedBy = "image")
+    private User user;
+
     public Image(String fileName) {
         this.fileName = fileName;
+    }
+
+    public Image(String fileName, User user) {
+        this.fileName = fileName;
+        this.user = user;
     }
 }

@@ -4,11 +4,16 @@ package com.example.BankExample.service.impl;
 
 import com.example.BankExample.DTO.ImageDTO;
 import com.example.BankExample.DTO.ImageDownloadDTO;
+import com.example.BankExample.DTO.UserDTO;
 import com.example.BankExample.model.Image;
+import com.example.BankExample.model.User;
 import com.example.BankExample.repository.ImageRepo;
+import com.example.BankExample.repository.UserRepo;
 import com.example.BankExample.service.ImageService;
+import com.example.BankExample.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -37,6 +42,15 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     private ImageRepo imageRepo;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private UserRepo userRepo;
+
     @Override
     public ImageDTO uploadFile(ImageDTO imageDTO) {
         MultipartFile file = imageDTO.getImage();
@@ -54,6 +68,27 @@ public class ImageServiceImpl implements ImageService {
         }
         return ImageDTO.builder().imageId(savedImage.getImageId()).build();
 
+    }
+
+    @Override
+    public ImageDTO uploadFileWithUserId(int id, ImageDTO imageDTO) {
+        MultipartFile file = imageDTO.getImage();
+        if (file.isEmpty()) throw new RuntimeException("File not found");
+        if (!this.isFileValid(file)) throw new RuntimeException("Unsupported format");
+
+        String fileName = this.generateFileName(file);
+        Image savedImage;
+
+        try {
+            Files.copy(file.getInputStream(), this.generateFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
+            User user = this.userRepo.findById(id).orElseThrow(()-> new RuntimeException("User not found"));
+            savedImage = this.imageRepo.save(new Image(fileName));
+            user.setImage(savedImage);
+            this.userRepo.save(user);
+        } catch (IOException exception) {
+            throw new RuntimeException("File upload error");
+        }
+        return ImageDTO.builder().imageId(savedImage.getImageId()).build();
     }
 
     @Override

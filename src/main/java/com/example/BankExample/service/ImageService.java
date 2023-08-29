@@ -6,5 +6,7 @@ import com.example.BankExample.DTO.ImageDownloadDTO;
 public interface ImageService {
     ImageDTO uploadFile(ImageDTO imageDTO);
 
+    ImageDTO uploadFileWithUserId(int id, ImageDTO imageDTO);
+
     ImageDownloadDTO downloadFile(Long imageId);
 }

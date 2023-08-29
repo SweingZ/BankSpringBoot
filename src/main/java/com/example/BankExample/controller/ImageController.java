@@ -19,6 +19,11 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.imageService.uploadFile(imageDTO));
     }
 
+    @PostMapping("upload/{id}")
+    public ResponseEntity<ImageDTO> uploadWithId(@PathVariable int id, @ModelAttribute ImageDTO imageDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.imageService.uploadFileWithUserId(id,imageDTO));
+    }
+
     @GetMapping("image/{Id}")
     public ResponseEntity<Resource> download(@PathVariable("Id") Long imageId) {
         ImageDownloadDTO imageDownloadDTO = this.imageService.downloadFile(imageId);

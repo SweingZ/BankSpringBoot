@@ -38,5 +38,9 @@ public class User extends Person{
     @JoinColumn(name = "agent_id")
     private Agent agent;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
     private final RoleEnum role = RoleEnum.ROLE_USER;
 }
