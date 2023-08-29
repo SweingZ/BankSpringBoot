@@ -9,4 +9,6 @@ public interface ImageService {
     ImageDTO uploadFileWithUserId(int id, ImageDTO imageDTO);
 
     ImageDownloadDTO downloadFile(Long imageId);
+
+    ImageDownloadDTO downloadWithUserId(int id);
 }

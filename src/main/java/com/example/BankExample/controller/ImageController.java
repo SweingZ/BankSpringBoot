@@ -19,14 +19,22 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.imageService.uploadFile(imageDTO));
     }
 
-    @PostMapping("upload/{id}")
-    public ResponseEntity<ImageDTO> uploadWithId(@PathVariable int id, @ModelAttribute ImageDTO imageDTO){
+    @PostMapping("upload/user/{id}")
+    public ResponseEntity<ImageDTO> uploadWithUserId(@PathVariable int id, @ModelAttribute ImageDTO imageDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.imageService.uploadFileWithUserId(id,imageDTO));
     }
 
-    @GetMapping("image/{Id}")
+    @GetMapping("download/{Id}")
     public ResponseEntity<Resource> download(@PathVariable("Id") Long imageId) {
         ImageDownloadDTO imageDownloadDTO = this.imageService.downloadFile(imageId);
+        return ResponseEntity.ok()
+                .contentType(imageDownloadDTO.getMediaType())
+                .body(imageDownloadDTO.getResource());
+    }
+
+    @GetMapping("download/user/{id}")
+    public ResponseEntity<Resource> downloadWithUserId(@PathVariable("id") int id){
+        ImageDownloadDTO imageDownloadDTO = this.imageService.downloadWithUserId(id);
         return ResponseEntity.ok()
                 .contentType(imageDownloadDTO.getMediaType())
                 .body(imageDownloadDTO.getResource());

@@ -103,6 +103,19 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    @Override
+    public ImageDownloadDTO downloadWithUserId(int id) {
+        Long imageId = this.imageRepo.returnImageId(id);
+        Image image = this.imageRepo.findById(imageId).orElseThrow(() -> new RuntimeException("Image not found"));
+        try {
+            MediaType mediaType = this.getMediaType(image.getFileName());
+            Resource resource = new UrlResource(this.generateFilePath(image.getFileName()).toUri());
+            return new ImageDownloadDTO(resource, mediaType);
+        } catch (IOException exception) {
+            throw new RuntimeException("File read error");
+        }
+    }
+
     private MediaType getMediaType(String fileName) {
         int index = fileName.lastIndexOf('.');
         String extension = fileName.substring(index + 1);
