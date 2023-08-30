@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         UserDTO userDTO = this.modelMapper.map(user, UserDTO.class);
         userDTO.setPassword(null);
+        userDTO.setAgent(null);
         return userDTO;
     }
 
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService {
         List<UserDTO> userDTOList = users.stream().map((user) -> {
             UserDTO userDTO = modelMapper.map(user, UserDTO.class);
             userDTO.setPassword(null);
+            userDTO.setAgent(null);
             return userDTO;
         }).toList();
         return userDTOList;
@@ -60,8 +62,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO userDTO, int id) {
-        UserDTO savedUserDTO = this.getUserById(id);
-
+        User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        UserDTO savedUserDTO = this.modelMapper.map(user,UserDTO.class);
         if(Objects.nonNull(userDTO.getFirstName())){
             savedUserDTO.setFirstName(userDTO.getFirstName());
         }
@@ -83,6 +85,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = this.modelMapper.map(savedUserDTO,User.class);
         this.userRepo.save(savedUser);
         savedUserDTO.setPassword(null);
+        savedUserDTO.setAgent(null);
         return savedUserDTO;
     }
 }
