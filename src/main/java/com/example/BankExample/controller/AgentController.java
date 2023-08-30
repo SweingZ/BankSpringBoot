@@ -49,4 +49,10 @@ public class AgentController {
     public List<UserDTO> getUserList(@PathVariable("agentId") int agentId){
         return this.agentService.getUserList(agentId);
     }
+
+    @PostMapping("agent/deposit/{userId}/{amount}")
+    public ResponseEntity<String> depositMoney(@PathVariable("userId") int userId, @PathVariable("amount") int amount){
+        this.agentService.depositMoney(userId,amount);
+        return ResponseEntity.status(200).body("Money Deposited Successfully");
+    }
 }

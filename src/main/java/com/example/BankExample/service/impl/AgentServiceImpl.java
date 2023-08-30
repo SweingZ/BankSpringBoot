@@ -2,8 +2,10 @@ package com.example.BankExample.service.impl;
 
 import com.example.BankExample.DTO.AgentDTO;
 import com.example.BankExample.DTO.UserDTO;
+import com.example.BankExample.model.Account;
 import com.example.BankExample.model.Agent;
 import com.example.BankExample.model.User;
+import com.example.BankExample.repository.AccountRepo;
 import com.example.BankExample.repository.AgentRepo;
 import com.example.BankExample.repository.UserRepo;
 import com.example.BankExample.service.AgentService;
@@ -22,6 +24,9 @@ public class AgentServiceImpl implements AgentService {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private AccountRepo accountRepo;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -97,5 +102,14 @@ public class AgentServiceImpl implements AgentService {
         }).toList();
         agentDTO.setUserList(null);
         return userDTOList;
+    }
+
+    @Override
+    public void depositMoney(int userId, int amount) {
+        int accountId = this.agentRepo.returnAccountId(userId);
+        Account account = this.accountRepo.findById(accountId).orElseThrow(() -> new RuntimeException("Account Not Found"));
+        int newBalance = account.getBalance() + amount;
+        account.setBalance(newBalance);
+        this.accountRepo.save(account);
     }
 }
