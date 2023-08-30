@@ -37,4 +37,10 @@ public class UserController {
         return ResponseEntity.status(200).body(userDTO);
     }
 
+    @PutMapping("user/{id}")
+    public ResponseEntity<UserDTO> updateUserById(@PathVariable("id") int id,@RequestBody UserDTO userDTO){
+        UserDTO savedUserDTO = this.userService.updateUser(userDTO,id);
+        return ResponseEntity.status(200).body(savedUserDTO);
+    }
+
 }

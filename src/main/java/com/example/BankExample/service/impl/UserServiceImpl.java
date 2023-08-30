@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,6 +60,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO userDTO, int id) {
-        return null;
+        UserDTO savedUserDTO = this.getUserById(id);
+
+        if(Objects.nonNull(userDTO.getFirstName())){
+            savedUserDTO.setFirstName(userDTO.getFirstName());
+        }
+        if(Objects.nonNull(userDTO.getLastName())){
+            savedUserDTO.setLastName(userDTO.getLastName());
+        }
+        if(Objects.nonNull(userDTO.getEmail())){
+            savedUserDTO.setEmail(userDTO.getEmail());
+        }
+        if(Objects.nonNull(userDTO.getDateOfBirth())){
+            savedUserDTO.setDateOfBirth(userDTO.getDateOfBirth());
+        }
+        if(Objects.nonNull(userDTO.getAddress())){
+            savedUserDTO.setAddress(userDTO.getAddress());
+        }
+        if(Objects.nonNull(userDTO.getPassword())){
+            savedUserDTO.setPassword(userDTO.getPassword());
+        }
+        User savedUser = this.modelMapper.map(savedUserDTO,User.class);
+        this.userRepo.save(savedUser);
+        savedUserDTO.setPassword(null);
+        return savedUserDTO;
     }
 }
