@@ -2,9 +2,12 @@ package com.example.BankExample.service.impl;
 
 import com.example.BankExample.DTO.UserDTO;
 import com.example.BankExample.model.Account;
+import com.example.BankExample.model.Admin;
+import com.example.BankExample.model.Agent;
 import com.example.BankExample.model.User;
 import com.example.BankExample.repository.AccountRepo;
 import com.example.BankExample.repository.UserRepo;
+import com.example.BankExample.service.AuthenticationService;
 import com.example.BankExample.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +74,7 @@ public class UserServiceImpl implements UserService {
             savedUserDTO.setLastName(userDTO.getLastName());
         }
         if(Objects.nonNull(userDTO.getEmail())){
+            if(this.emailExists(userDTO.getEmail())) throw new RuntimeException("Email already taken");
             savedUserDTO.setEmail(userDTO.getEmail());
         }
         if(Objects.nonNull(userDTO.getDateOfBirth())){
@@ -87,5 +91,10 @@ public class UserServiceImpl implements UserService {
         savedUserDTO.setPassword(null);
         savedUserDTO.setAgent(null);
         return savedUserDTO;
+    }
+
+    private Boolean emailExists(String email) {
+        Optional<User> savedUser = this.userRepo.findByEmail(email);
+        return savedUser.isPresent();
     }
 }
