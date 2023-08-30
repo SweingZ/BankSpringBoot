@@ -112,4 +112,14 @@ public class AgentServiceImpl implements AgentService {
         account.setBalance(newBalance);
         this.accountRepo.save(account);
     }
+
+    @Override
+    public void withdrawMoney(int userId, int amount) {
+        int accountId = this.agentRepo.returnAccountId(userId);
+        Account account = this.accountRepo.findById(accountId).orElseThrow(() -> new RuntimeException("Account Not Found"));
+        int newBalance = account.getBalance() - amount;
+        if (newBalance < 1000) throw new RuntimeException("Not enough Balance");
+        account.setBalance(newBalance);
+        this.accountRepo.save(account);
+    }
 }

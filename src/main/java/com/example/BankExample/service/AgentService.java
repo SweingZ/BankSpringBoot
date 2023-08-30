@@ -16,4 +16,5 @@ public interface AgentService {
     void addUserToAgent(int agentId,int userId);
     List<UserDTO> getUserList(int agentId);
     void depositMoney(int userId,int amount);
+    void withdrawMoney(int userId,int amount);
 }

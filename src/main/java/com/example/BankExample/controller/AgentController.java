@@ -55,4 +55,10 @@ public class AgentController {
         this.agentService.depositMoney(userId,amount);
         return ResponseEntity.status(200).body("Money Deposited Successfully");
     }
+
+    @PostMapping("agent/withdraw/{userId}/{amount}")
+    public ResponseEntity<String> withdrawMoney(@PathVariable("userId") int userId, @PathVariable("amount") int amount){
+        this.agentService.withdrawMoney(userId,amount);
+        return ResponseEntity.status(200).body("Money withdrawn successfully");
+    }
 }
