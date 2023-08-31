@@ -16,6 +16,7 @@ public class Account {
     private int account_id;
     private int balance;
     private LocalDate dateOpened;
+    private final float interestRate = 6.9f;
 
     @JsonBackReference
     @OneToOne(mappedBy = "account")

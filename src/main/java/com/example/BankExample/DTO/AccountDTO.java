@@ -17,6 +17,7 @@ public class AccountDTO {
     private int account_id;
     private int balance;
     private LocalDate dateOpened;
+    private final float interestRate = 6.9f;
 
     @JsonBackReference
     private UserDTO user;
