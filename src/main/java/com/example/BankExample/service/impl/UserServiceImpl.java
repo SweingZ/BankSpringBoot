@@ -121,6 +121,18 @@ public class UserServiceImpl implements UserService {
         this.accountRepo.save(receiverAccount);
     }
 
+    @Override
+    public List<TransactionDTO> getUserTransactionList(int userId) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        List<Transaction> userTransactionList = user.getAccount().getTransactionList();
+        List<TransactionDTO> transactionList = userTransactionList.stream().map((transaction) -> {
+            TransactionDTO transactionDTO = modelMapper.map(transaction, TransactionDTO.class);
+            transactionDTO.setAccount(null);
+            return transactionDTO;
+        }).toList();
+        return transactionList;
+    }
+
     private Boolean emailExists(String email) {
         Optional<User> savedUser = this.userRepo.findByEmail(email);
         return savedUser.isPresent();

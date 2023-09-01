@@ -51,4 +51,9 @@ public class UserController {
         return ResponseEntity.status(200).body("Transaction successful");
     }
 
+    @GetMapping("user/{userId}/transactionList")
+    public List<TransactionDTO> getTransactionList(@PathVariable("userId") int userId){
+        return this.userService.getUserTransactionList(userId);
+    }
+
 }
