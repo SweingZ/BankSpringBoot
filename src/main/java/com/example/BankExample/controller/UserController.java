@@ -1,5 +1,6 @@
 package com.example.BankExample.controller;
 
+import com.example.BankExample.DTO.TransactionDTO;
 import com.example.BankExample.DTO.UserDTO;
 import com.example.BankExample.model.User;
 import com.example.BankExample.service.UserService;
@@ -42,6 +43,12 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUserById(@PathVariable("id") int id,@RequestBody @Valid UserDTO userDTO){
         UserDTO savedUserDTO = this.userService.updateUser(userDTO,id);
         return ResponseEntity.status(200).body(savedUserDTO);
+    }
+
+    @PostMapping("user/{userId}/transaction")
+    public ResponseEntity<String> addTransactionToUserAccount(@PathVariable("userId")int userId, @RequestBody TransactionDTO transactionDTO){
+        userService.addTransactionToUser(userId,transactionDTO);
+        return ResponseEntity.status(200).body("Transaction successful");
     }
 
 }

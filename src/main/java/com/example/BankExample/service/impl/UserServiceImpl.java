@@ -1,11 +1,11 @@
 package com.example.BankExample.service.impl;
 
+import com.example.BankExample.DTO.TransactionDTO;
 import com.example.BankExample.DTO.UserDTO;
-import com.example.BankExample.model.Account;
-import com.example.BankExample.model.Admin;
-import com.example.BankExample.model.Agent;
-import com.example.BankExample.model.User;
+import com.example.BankExample.model.*;
 import com.example.BankExample.repository.AccountRepo;
+import com.example.BankExample.repository.AgentRepo;
+import com.example.BankExample.repository.TransactionRepo;
 import com.example.BankExample.repository.UserRepo;
 import com.example.BankExample.service.AuthenticationService;
 import com.example.BankExample.service.UserService;
@@ -28,6 +28,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private AgentRepo agentRepo;
+
+    @Autowired
+    private TransactionRepo transactionRepo;
 
     @Override
     public void createUser(UserDTO userDTO) {
@@ -58,6 +64,7 @@ public class UserServiceImpl implements UserService {
             UserDTO userDTO = modelMapper.map(user, UserDTO.class);
             userDTO.setPassword(null);
             userDTO.setAgent(null);
+            userDTO.getAccount().setTransactionList(null);
             return userDTO;
         }).toList();
         return userDTOList;
@@ -91,6 +98,27 @@ public class UserServiceImpl implements UserService {
         savedUserDTO.setPassword(null);
         savedUserDTO.setAgent(null);
         return savedUserDTO;
+    }
+
+    @Override
+    public void addTransactionToUser(int userId, TransactionDTO transactionDTO) {
+        int accountId = this.agentRepo.returnAccountId(userId);
+        Account account = this.accountRepo.findById(accountId).orElseThrow(() -> new RuntimeException("Account Not Found"));
+        Transaction transaction = this.modelMapper.map(transactionDTO,Transaction.class);
+        LocalDate currentDate = LocalDate.now();
+        transaction.setDateOfTransfer(currentDate);
+        account.getTransactionList().add(transaction);
+        transaction.setAccount(account);
+        Account receiverAccount = this.accountRepo.findById(transaction.getReceiver_id()).orElseThrow(() -> new RuntimeException("Account Not Found"));
+        int transferAmount = transactionDTO.getAmount();
+        int newBalanceSender = account.getBalance() - transferAmount;
+        if (newBalanceSender < 1000) throw new RuntimeException("Not enough Balance");
+        account.setBalance(newBalanceSender);
+        int newBalanceReceiver = receiverAccount.getBalance() + transferAmount;
+        receiverAccount.setBalance(newBalanceReceiver);
+        this.accountRepo.save(account);
+//        this.transactionRepo.save(transaction);
+        this.accountRepo.save(receiverAccount);
     }
 
     private Boolean emailExists(String email) {

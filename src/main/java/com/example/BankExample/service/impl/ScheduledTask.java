@@ -6,7 +6,6 @@ import com.example.BankExample.repository.AccountRepo;
 import com.example.BankExample.service.AccountService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.Banner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
