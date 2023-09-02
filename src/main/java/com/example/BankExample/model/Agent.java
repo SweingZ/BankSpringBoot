@@ -21,7 +21,7 @@ public class Agent extends Person{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int agent_id;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "agent")
+    @OneToMany(mappedBy = "agent")
     @JsonBackReference
     private List<User> userList = new ArrayList<>();
 

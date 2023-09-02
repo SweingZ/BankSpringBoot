@@ -1,6 +1,7 @@
 package com.example.BankExample.DTO;
 
 import com.example.BankExample.enums.RoleEnum;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO extends PersonDTO {
     private int user_id;
     private LocalDate dateOfBirth;

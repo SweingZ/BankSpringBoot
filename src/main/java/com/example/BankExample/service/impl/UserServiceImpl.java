@@ -1,5 +1,6 @@
 package com.example.BankExample.service.impl;
 
+import com.example.BankExample.DTO.AccountDTO;
 import com.example.BankExample.DTO.TransactionDTO;
 import com.example.BankExample.DTO.UserDTO;
 import com.example.BankExample.model.*;
@@ -7,7 +8,6 @@ import com.example.BankExample.repository.AccountRepo;
 import com.example.BankExample.repository.AgentRepo;
 import com.example.BankExample.repository.TransactionRepo;
 import com.example.BankExample.repository.UserRepo;
-import com.example.BankExample.service.AuthenticationService;
 import com.example.BankExample.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(int id) {
+        User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         userRepo.deleteById(id);
     }
 
@@ -54,6 +55,8 @@ public class UserServiceImpl implements UserService {
         UserDTO userDTO = this.modelMapper.map(user, UserDTO.class);
         userDTO.setPassword(null);
         userDTO.setAgent(null);
+        userDTO.setLoanList(null);
+        userDTO.getAccount().setTransactionList(null);
         return userDTO;
     }
 
@@ -64,6 +67,7 @@ public class UserServiceImpl implements UserService {
             UserDTO userDTO = modelMapper.map(user, UserDTO.class);
             userDTO.setPassword(null);
             userDTO.setAgent(null);
+            userDTO.setLoanList(null);
             userDTO.getAccount().setTransactionList(null);
             return userDTO;
         }).toList();
@@ -97,6 +101,8 @@ public class UserServiceImpl implements UserService {
         this.userRepo.save(savedUser);
         savedUserDTO.setPassword(null);
         savedUserDTO.setAgent(null);
+        savedUserDTO.setLoanList(null);
+        savedUserDTO.getAccount().setTransactionList(null);
         return savedUserDTO;
     }
 

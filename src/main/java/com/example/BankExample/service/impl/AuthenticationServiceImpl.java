@@ -55,6 +55,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             log.error("Email {} already taken", user.getEmail());
             throw new RuntimeException("Email already taken");
         }
+        if(this.phoneExists(user.getPhoneNumber())){
+            throw new RuntimeException("Phone number already taken");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         LocalDate currentData = LocalDate.now();
         user.getAccount().setDateOpened(currentData);
@@ -68,6 +71,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Optional<User> savedUser = this.userRepo.findByEmail(email);
         Optional<Agent> savedAgent = this.agentRepo.findByEmail(email);
         return savedAdmin.isPresent() || savedUser.isPresent() || savedAgent.isPresent();
+    }
+
+    private Boolean phoneExists(long phone){
+        Optional<User> savedUser = this.userRepo.findByPhoneNumber(phone);
+        return savedUser.isPresent();
     }
 
     @Override

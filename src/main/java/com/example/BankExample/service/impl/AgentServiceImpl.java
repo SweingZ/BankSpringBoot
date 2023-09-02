@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,12 +41,20 @@ public class AgentServiceImpl implements AgentService {
         if (this.emailExists(agent.getEmail())){
             throw new RuntimeException("Email already taken");
         }
+        if (this.phoneExists(agent.getPhoneNumber())){
+            throw new RuntimeException("Phone number already taken");
+        }
         agent.setPassword(passwordEncoder.encode(agent.getPassword()));
         this.agentRepo.save(agent);
     }
 
     private Boolean emailExists(String email) {
         Optional<Agent> savedAgent = this.agentRepo.findByEmail(email);
+        return savedAgent.isPresent();
+    }
+
+    private Boolean phoneExists(long phone){
+        Optional<Agent> savedAgent = this.agentRepo.findByPhoneNumber(phone);
         return savedAgent.isPresent();
     }
 
@@ -93,14 +102,15 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public List<UserDTO> getUserList(int agentId) {
         Agent agent = agentRepo.findById(agentId).orElseThrow(() -> new RuntimeException("Agent Not Found"));
-        AgentDTO agentDTO = this.modelMapper.map(agent,AgentDTO.class);
-        List<UserDTO> userDTOList = agentDTO.getUserList();
-        List<UserDTO> userList = userDTOList.stream().map(user ->{
-            user.setPassword(null);
-            user.setAgent(null);
-            return user;
+        List<User> userList = agent.getUserList();
+        List<UserDTO> userDTOList = userList.stream().map(user ->{
+            UserDTO userDTO = modelMapper.map(user,UserDTO.class);
+            userDTO.setPassword(null);
+            userDTO.setAgent(null);
+            userDTO.setLoanList(null);
+            userDTO.getAccount().setTransactionList(null);
+            return userDTO;
         }).toList();
-        agentDTO.setUserList(null);
         return userDTOList;
     }
 
