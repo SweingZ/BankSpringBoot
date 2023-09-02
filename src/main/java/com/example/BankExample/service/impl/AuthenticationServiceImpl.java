@@ -103,6 +103,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private LoginResponseDTO loginAsUser(String email, String password) {
         UserDTO userDTO = this.getUserByEmail(email);
+        userDTO.setAgent(null);
+        userDTO.setLoanList(null);
+        userDTO.getAccount().setTransactionList(null);
         return this.authenticate(userDTO, password, userDTO.getRole());
     }
 

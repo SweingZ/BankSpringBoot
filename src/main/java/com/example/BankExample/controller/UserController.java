@@ -6,6 +6,7 @@ import com.example.BankExample.model.User;
 import com.example.BankExample.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,6 +29,7 @@ public class UserController {
         return ResponseEntity.status(201).body("User Deleted");
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_AGENT')")
     @GetMapping("user")
     public List<UserDTO> getAllUsers(){
         return userService.getAllUsers();
@@ -39,18 +41,21 @@ public class UserController {
         return ResponseEntity.status(200).body(userDTO);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @PutMapping("user/{id}")
     public ResponseEntity<UserDTO> updateUserById(@PathVariable("id") int id,@RequestBody @Valid UserDTO userDTO){
         UserDTO savedUserDTO = this.userService.updateUser(userDTO,id);
         return ResponseEntity.status(200).body(savedUserDTO);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @PostMapping("user/{userId}/transaction")
     public ResponseEntity<String> addTransactionToUserAccount(@PathVariable("userId")int userId, @RequestBody TransactionDTO transactionDTO){
         userService.addTransactionToUser(userId,transactionDTO);
         return ResponseEntity.status(200).body("Transaction successful");
     }
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("user/{userId}/transactionList")
     public List<TransactionDTO> getTransactionList(@PathVariable("userId") int userId){
         return this.userService.getUserTransactionList(userId);
